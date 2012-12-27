@@ -20,25 +20,25 @@ import com.mongodb.Mongo;
 public class CityConfig extends AbstractMongoConfiguration {
 
 	@Autowired
-    Environment env;
+	Environment env;
 
 	public @Bean
 	MongoOperations mongoTemplate(Mongo mongo) {
-		final String db = env.getProperty("zkmongogmaps.db");
+		final String db = env.getProperty("zkmongomaps.mongo.db");
 		MongoTemplate mongoTemplate = new MongoTemplate(mongo, db);
 		return mongoTemplate;
 	}
 
 	@Override
 	public String getDatabaseName() {
-		final String db = env.getProperty("zkmongogmaps.db");
+		final String db = env.getProperty("zkmongomaps.mongo.db");
 		return db;
 	}
-	
+
 	@Override
 	public Mongo mongo() throws Exception {
-		final String host = env.getProperty("zkmongogmaps.host");
-		final Integer port = Integer.valueOf(env.getProperty("zkmongogmaps.port"));
+		final String host = env.getProperty("zkmongomaps.mongo.host");
+		final Integer port = Integer.valueOf(env.getProperty("zkmongomaps.mongo.port"));
 		return new Mongo(host, port);
 	}
 
