@@ -1,0 +1,6 @@
+#!/bin/bash
+# This is a simple post deploy hook executed after your application 
+# is deployed and started. 
+# Here we attempt to kill the server process in case it was hung
+ps -ef | grep zkmongomaps.war | grep -v grep | awk '{ print $2 }' | xargs kill -KILL > /dev/null 2>&1
+exit 0
