@@ -7,13 +7,11 @@ import org.springframework.data.mongodb.core.geo.Circle;
 import org.springframework.data.mongodb.core.geo.Distance;
 import org.springframework.data.mongodb.core.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ZipcodeRepository extends MongoRepository<Zipcode, String> {
 
-	@Query("{ state: ?0 }")
 	List<Zipcode> findByState(String state);
 
 	List<Zipcode> findByLocWithin(Circle c);

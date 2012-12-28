@@ -160,5 +160,21 @@ public class CityRepositoryTests {
 		Assert.assertThat(combined, hasItem(DUSSELDORF));
 	}
 
+	@Test public void testFindByState() {
+		// given
+		
+		mongoOperations.save( BERLIN );
+		mongoOperations.save( COLOGNE );
+		mongoOperations.save( DUSSELDORF );
+		
+		// when
+		List<Zipcode> nrw = cityRepository.findByState("North Rhine-Westphalia");
+		
+		// then
+		
+		Assert.assertThat(nrw.size(), is(2));	
+		Assert.assertThat(nrw, hasItem(COLOGNE));
+		Assert.assertThat(nrw, hasItem(DUSSELDORF));
+	}
 
 }

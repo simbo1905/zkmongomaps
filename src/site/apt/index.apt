@@ -8,7 +8,7 @@ Introduction
 
 The Screen
 
-  The screen is a Google Maps component driven by a paginated listbox as shown below: 
+  The screen is a Google Maps component driven by a paginated listbox: 
 
 [./images/screen.png] Sample Screen
 
@@ -52,7 +52,42 @@ The Screen
 
 +--------------------------
 
-  The entity class is marked with Spring Data persistence annotations @Document and @Id. This marks the entity for mapping into MongoDB and defines the document primary key. The remainder of the class are basic properties which Spring Data maps into MongoDB documents using relection. 
+  The entity class is marked with Spring Data persistence annotations <<@Document>> and <<@Id>>. This marks the entity for mapping into MongoDB and defines the document primary key. The remainder of the class are basic properties which Spring Data maps into MongoDB documents using relection. 
+
+Data Access
+
+  The data access layer is provided by the ZipcodeRepository interface: 
+  
++--------------------------
+
+	@Repository
+	public interface ZipcodeRepository extends MongoRepository<Zipcode, String> {
+	
+	}
+
++--------------------------
+
+  <<MongoRepository>> extends both <<CrudRepository>> and <<PagingAndSortingRepository>> for basic data access and paging behaviour. No implimentation of the class is given within the sourcecode; the Spring Data MongoDB framework generates the implimentation class at runtime. It is the generated class which provides PagingAndSortingRepository findAll method used by the screen:
+  
++--------------------------
+
+	Page<T> findAll(Pageable pageable);
+
++--------------------------  
+
+  Better yet the Spring Data MongoDB framework can generate query detailed query methods based on carefully named method signaturess. Within the sample code are junit test that exercise basic and geospatial queries unused by the screen. For example the following methods specify queries by 'state' or 'loc' on the Zipcode collection: 
+  
++--------------------------
+
+	List<Zipcode> findByState(String state);
+
+	List<Zipcode> findByLocNear(Point p, Distance d);
+
++--------------------------
+
+  These are covered in detail by Tobias Trelle blog {{{hhttp://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/}Spring Data Ð Part 4: Geospatial Queries with MongoDB}}
+
+The Screen File
 
   The screen is defined within a single ZUL page withing the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}} Here is the entire ZUL screen: 
 
@@ -96,7 +131,60 @@ The Screen
 
 +--------------------------
 
-  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. Lines 8 and 9 of the ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component as highlighted below: 
+  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. At line 4 the framework binder org.zkoss.bind.BindComposer is applied to the window component. At line 5 the viewmodel of the page is set as an instance of the <<ZipCodeViewModel>> class given the variable name 'vm'.  
+  
+The ViewModel
+  
+  The viewmodel class is presented in its entirety below: 
+  
++--------------------------
+  
+15 public class ZipcodeViewModel {
+16 
+17   @WireVariable
+18   protected ZipcodeRepository zipcodeRepository = null;
+19   
+20   int pageSize = 10;
+21   int activePage = 0;
+22   
+23   public long getTotalSize()
+24   {
+25     return zipcodeRepository.count();
+26   }
+27   
+28   public Integer getPageSize()
+29   {
+30     return pageSize;
+31   }
+32 
+33   @NotifyChange("zipcodes")
+34   public void setActivePage(int activePage)
+35   {
+36     this.activePage = activePage;
+37   }
+38 
+39   public List<Zipcode> getZipcodes()
+40   {
+41     Pageable pageable = new PageRequest(activePage,pageSize);
+42     Page<Zipcode> page = zipcodeRepository.findAll(pageable);
+43     return Lists.newArrayList(page.iterator());
+44   }
+45   
+46   protected Zipcode pickedZipcode = null;
+47 
+48   public Zipcode getPickedZipcode() {
+49     return pickedZipcode;
+50   }
+51 
+52   public void setPickedZipcode(Zipcode pickedZipcode) {
+53     this.pickedZipcode = pickedZipcode;
+54   }
+55 
+56 }
+
++--------------------------
+  
+  The ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component as highlighted below: 
   
 +--------------------------
 
@@ -107,9 +195,9 @@ The Screen
 
 +--------------------------
   
-  These databindings are EL expression defining null-safe bindings onto the corresponding properties of the 'vm.pickedZipcode' object. Whenever the 'pickedZipcode' attribute of the ViewModel is updated to be a new city object the 'lat' and 'lng' properties will be loaded into the gmaps component. This causes the google maps component to show the location of the zip code. 
+  These databindings are EL expression defining null-safe bindings onto the corresponding properties of the 'vm.pickedZipcode'. This is the entity  within the attribute at line 46 of the <<ZipcodeViewModel>>. Whenever the 'pickedZipcode' attribute of the viewmodel is updated to be a new entity the 'lat' and 'lng' properties will be loaded into the gmaps component. This causes the google maps component to show the location of the zipcode. 
   
-  Line 14 has the @save databinding applied to the 'selectedItem' attribute of the listbox: 
+  Line 14 has the @save databinding applied to the 'selectedItem' attribute of the listbox which writes into the 'pickedZipcode' attribute of the viewmodel: 
   
 +--------------------------
 
@@ -117,4 +205,73 @@ The Screen
 	selectedItem="@save(vm.pickedZipcode)">
 
 +--------------------------  
+
+  The listbox 'selectedItem' databinding logically binds the use click in the listbox to an update of the viewmodel. As the same viewmodel attribute is bound to the gmaps component clicking on an item in the listbox has the effect of updating the location on the map. 
   
+  The details of the listbox and the paging controls are outlined below: 
+  
++--------------------------
+
+	         <listbox model="@load(vm.zipcodes)"
+	14         selectedItem="@save(vm.pickedZipcode)">
+	15         <listhead>
+	16           <listheader label="Id" />
+	17           <listheader label="Name" />
+	18           <listheader label="State" />
+	19           <listheader label="Population" />
+	20         </listhead>
+	21         <template name="model" var="zipcode">
+	22           <listitem>
+	23             <listcell label="@load(zipcode._id)" />
+	24             <listcell label="@load(zipcode.city)" />
+	25             <listcell label="@load(zipcode.state)" />
+	26             <listcell label="@load(zipcode.pop)" />
+	27           </listitem>
+	28         </template>
+	29       </listbox>
+	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	31         activePage="@save(vm.activePage)" />
+
++--------------------------
+
+  At line 13 the 'model' attribute of the listbox is bound onto the 'zipcodes' attribute of the viewmodel. This has the effect of binding the listbox to the list of data returned by the viewmodel getZipcodes accessor highlighted below: 
+  
++--------------------------
+  
+	15 public class ZipcodeViewModel {
+	16 
+	17   @WireVariable
+	18   protected ZipcodeRepository zipcodeRepository = null;
+	
+	39   public List<Zipcode> getZipcodes()
+	40   {
+	41     Pageable pageable = new PageRequest(activePage,pageSize);
+	42     Page<Zipcode> page = zipcodeRepository.findAll(pageable);
+	43     return Lists.newArrayList(page.iterator());
+	44   }
+
++--------------------------
+
+  The viewmodel offloads the pagination logic to the zipcodeRepository using the attributes 'activePage' and 'pageSize'. At line 31 the @save databinding of the 'activePage' paging attribute cause updates to the viewmodel whenever the user selects a new page: 
+  
++--------------------------
+
+
+	       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	31         activePage="@save(vm.activePage)" />
+
++--------------------------
+
+  
+  This has the effect of updating the page returned to from the 'zipcodes' viewmodel accessor. The instruction to reload the listbox model when the viewmodel 'activePage' is updated is defined by the @NotifyChange annotation on the setter method: 
+  
++--------------------------
+
+33   @NotifyChange("zipcodes")
+34   public void setActivePage(int activePage)
+35   {
+36     this.activePage = activePage;
+37   }
+
++--------------------------
+
