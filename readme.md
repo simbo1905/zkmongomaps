@@ -17,7 +17,11 @@ You can set the following properties which defaults given values:
 	-Dzkmongomaps.mongo.host=localhost
 	-Dzkmongomaps.mongo.port=27017
 	-Dzkmongomaps.mongo.db=world
+	-Dzkmongomaps.mongo.user=zkmongomaps
+	-Dzkmongomaps.mongo.password=xxx
 
 The defaults are defined within zkmongogmaps.properties
+
+See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
 
 End.
