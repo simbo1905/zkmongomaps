@@ -6,9 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.authentication.UserCredentials;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.mongodb.Mongo;
@@ -17,29 +18,28 @@ import com.mongodb.Mongo;
 @PropertySource({ "classpath:zkmongogmaps.properties" })
 @EnableMongoRepositories
 @Configuration
-public class CityConfig extends AbstractMongoConfiguration {
+public class CityConfig {
 
 	@Autowired
 	Environment env;
 
 	public @Bean
-	MongoOperations mongoTemplate(Mongo mongo) {
+	MongoDbFactory mongoDbFactory() throws Exception {
+		final String user = env.getProperty("zkmongomaps.mongo.user");
 		final String db = env.getProperty("zkmongomaps.mongo.db");
-		MongoTemplate mongoTemplate = new MongoTemplate(mongo, db);
-		return mongoTemplate;
-	}
-
-	@Override
-	public String getDatabaseName() {
-		final String db = env.getProperty("zkmongomaps.mongo.db");
-		return db;
-	}
-
-	@Override
-	public Mongo mongo() throws Exception {
+		final String password = env.getProperty("zkmongomaps.mongo.password");
 		final String host = env.getProperty("zkmongomaps.mongo.host");
-		final Integer port = Integer.valueOf(env.getProperty("zkmongomaps.mongo.port"));
-		return new Mongo(host, port);
+		final Integer port = Integer.valueOf(env
+				.getProperty("zkmongomaps.mongo.port"));
+
+		UserCredentials userCredentials = new UserCredentials(user, password);
+		return new SimpleMongoDbFactory(new Mongo(host, port), db,
+				userCredentials);
+	}
+
+	public @Bean
+	MongoTemplate mongoTemplate() throws Exception {
+		return new MongoTemplate(mongoDbFactory());
 	}
 
 }
