@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
-<zk>
+<zk xmlns:n="native">
 	<window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')"
 		binder="@init(queueName='cityqueue',queueScope='desktop')">
@@ -32,5 +32,6 @@
 				activePage="@save(vm.activePage)" />
 		</vbox>
 	</window>
+	Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
 </zk>
 
