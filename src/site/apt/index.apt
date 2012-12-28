@@ -12,7 +12,7 @@ The Screen
 
 [./images/screen.png] Sample Screen
 
-  The screen renders simple City entity which are defined within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/City.java}City.java}}. The entities are marked with @Document and @Id Spring Data persistence annotations. The remainder of the class are simply properties which Spring Data writes out as a MongoDB document using relection. 
+  The screen renders simple City entity which are defined within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/City.java}City.java}}. The entities are marked with @Document and @Id Spring Data persistence annotations. The remainder of the class are simply properties which Spring Data maps to a MongoDB document using relection. 
   
 +--------------------------
 
@@ -57,40 +57,39 @@ The Screen
 +--------------------------
 
 	   <?xml version="1.0" encoding="UTF-8"?>
-	02 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
-	03 <zk xmlns:n="native">
-	04   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
-	05     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
-	06 
-	07     <gmaps id="mymap" version="3.5" width="600px" height="450px"
-	08       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
-	09       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
-	10     </gmaps>
-	11 
-	12     <vbox width="600px">
-	13       <listbox height="330px" model="@bind(vm.cities)"
-	14         selectedItem="@bind(vm.pickedCity)">
-	15         <listhead>
-	16           <listheader label="Id" />
-	17           <listheader label="Name" />
-	18           <listheader label="State" />
-	19           <listheader label="Population" />
-	20         </listhead>
-	21         <template name="model" var="city">
-	22           <listitem>
-	23             <listcell label="@bind(city._id)" />
-	24             <listcell label="@bind(city.city)" />
-	25             <listcell label="@bind(city.state)" />
-	26             <listcell label="@bind(city.pop)" />
-	27           </listitem>
-	28         </template>
-	29       </listbox>
-	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	31         activePage="@save(vm.activePage)" />
-	32     </vbox>
-	33   </window>
-	34   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
-	35 </zk>
+	02 <zk xmlns:n="native">
+	03   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
+	04     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
+	05 
+	06     <gmaps id="mymap" version="3.5" width="600px" height="450px"
+	07       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
+	08       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+	09     </gmaps>
+	10 
+	11     <vbox width="600px">
+	12       <listbox height="330px" model="@bind(vm.cities)"
+	13         selectedItem="@bind(vm.pickedCity)">
+	14         <listhead>
+	15           <listheader label="Id" />
+	16           <listheader label="Name" />
+	17           <listheader label="State" />
+	18           <listheader label="Population" />
+	19         </listhead>
+	20         <template name="model" var="city">
+	21           <listitem>
+	22             <listcell label="@bind(city._id)" />
+	23             <listcell label="@bind(city.city)" />
+	24             <listcell label="@bind(city.state)" />
+	25             <listcell label="@bind(city.pop)" />
+	26           </listitem>
+	27         </template>
+	28       </listbox>
+	29       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	30         activePage="@save(vm.activePage)" />
+	31     </vbox>
+	32   </window>
+	33   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
+	34 </zk>
 
 +--------------------------
 

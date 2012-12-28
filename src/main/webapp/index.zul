@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native">
 	<window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
 
-		<gmaps id="mymap" version="3.5" width="600px" height="450px"
-			showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
+		<gmaps id="mymap" version="3.5" width="600px" height="450px" showSmallCtrl="true" 
+			lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
 			lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
 		</gmaps>
 
 		<vbox width="600px">
-			<listbox height="330px" model="@bind(vm.cities)"
-				selectedItem="@bind(vm.pickedCity)">
+			<listbox height="330px" model="@load(vm.cities)"
+				selectedItem="@save(vm.pickedCity)">
 				<listhead>
 					<listheader label="Id" />
 					<listheader label="Name" />
@@ -19,10 +20,10 @@
 				</listhead>
 				<template name="model" var="city">
 					<listitem>
-						<listcell label="@bind(city._id)" />
-						<listcell label="@bind(city.city)" />
-						<listcell label="@bind(city.state)" />
-						<listcell label="@bind(city.pop)" />
+						<listcell label="@load(city._id)" />
+						<listcell label="@load(city.city)" />
+						<listcell label="@load(city.state)" />
+						<listcell label="@load(city.pop)" />
 					</listitem>
 				</template>
 			</listbox>
