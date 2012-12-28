@@ -23,6 +23,10 @@ public class CityConfig {
 	@Autowired
 	Environment env;
 
+	/**
+	 * If you are not running mongod with --auth then change this method to 
+	 * return new SimpleMongoDbFactory(new Mongo(host, port), db )
+	 */
 	public @Bean
 	MongoDbFactory mongoDbFactory() throws Exception {
 		final String user = env.getProperty("zkmongomaps.mongo.user");
@@ -32,6 +36,7 @@ public class CityConfig {
 		final Integer port = Integer.valueOf(env
 				.getProperty("zkmongomaps.mongo.port"));
 
+		// Assumes you are running mongod with --auth having set a user/password
 		UserCredentials userCredentials = new UserCredentials(user, password);
 		return new SimpleMongoDbFactory(new Mongo(host, port), db,
 				userCredentials);

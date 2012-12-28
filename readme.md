@@ -24,6 +24,11 @@ Upon first startup the application will attempt to load its own test data from
 the file zips.json.gz which was sourced from http://media.mongodb.org/zips.json
 This may take more than a minute. 
 
+Note that the code assumes you are running mongodb with --auth with a username 
+and password added to the particular db. This matches how mongo runs on 
+Redhat Openshift. You can edit the CityConfig.java to take out the credentials 
+configuration. 
+
 ## Running On Redhat Openshift PaaS
 
 See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
