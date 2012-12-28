@@ -27,7 +27,9 @@ This may take more than a minute.
 Note that the code assumes you are running mongodb with --auth with a username 
 and password added to the particular db. This matches how mongo runs on 
 Redhat Openshift. You can edit the CityConfig.java to take out the credentials 
-configuration. 
+code see the comment in that class. 
+
+[Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
 
 ## Running On Redhat Openshift PaaS
 
@@ -60,5 +62,13 @@ Approximate openshift instructions
 	
 	#tail the logs in a second window
 	rhc-tail-files -a zkmongomaps 
+
+## Inspiration 
+
+Tobias Trelle with [Spring Data Ð Part 4: Geospatial Queries with MongoDB](http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/)
+
+Hamid Fadishei with [ZK MVVM Design Pattern and Server-Side Paging](http://fadishei.wordpress.com/2012/03/22/zk-mvvm-design-pattern-and-server-side-paging/)
+
+See Z60-Gmaps-Bind.zul in the sourcecode for MVVM ZK GMaps showcasing the test module of [zkgmapsz](https://code.google.com/p/zkgmapsz/)
 
 End.
