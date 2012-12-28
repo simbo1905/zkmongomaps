@@ -1,0 +1,144 @@
+	------
+	ZK Serverside Pagination with Spring Data MongoDB 
+	------
+
+Introduction
+
+  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database. In this article will will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse pages of zipcode data.  The sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
+
+The Screen
+
+  The screen is a Google Maps component driven by a paginated listbox as shown below: 
+
+[./images/screen.png] Sample Screen
+
+  The screen is defined within a single ZUL page withing the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}} Here is the entire ZUL screen: 
+
++--------------------------
+	   <?xml version="1.0" encoding="UTF-8"?>
+	02 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+	03 <zk xmlns:n="native">
+	04   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
+	05     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')"
+	06     binder="@init(queueName='cityqueue',queueScope='desktop')">
+	07 
+	08     <gmaps id="mymap" version="3.5" width="600px" height="450px"
+	09       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
+	10       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+	11     </gmaps>
+	12 
+	13     <vbox width="600px">
+	14       <listbox height="330px" model="@bind(vm.cities)"
+	15         selectedItem="@bind(vm.pickedCity)">
+	16         <listhead>
+	17           <listheader label="Id" />
+	18           <listheader label="Name" />
+	19           <listheader label="State" />
+	20           <listheader label="Population" />
+	21         </listhead>
+	22         <template name="model" var="city">
+	23           <listitem>
+	24             <listcell label="@bind(city._id)" />
+	25             <listcell label="@bind(city.city)" />
+	26             <listcell label="@bind(city.state)" />
+	27             <listcell label="@bind(city.pop)" />
+	28           </listitem>
+	29         </template>
+	30       </listbox>
+	31       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	32         activePage="@save(vm.activePage)" />
+	33     </vbox>
+	34   </window>
+	35   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
+	36 </zk>
++--------------------------
+
+  Here are extracts from the Java file:
+
++--------------------------
+    1 : package org.zkforge.zktodo2.ui;
+
+   34 : @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
+   35 : public class Presenter extends SelectorComposer<Window> implements
+   36 : 		ListitemRenderer<Reminder> {
+
+   40 : 	// auto-wired property
+   41 : 	@WireVariable ReminderService reminderService;
+   42 : 
+   43 : 	// components
+   44 : 	@Wire Textbox name;
+   45 : 	@Wire Intbox priority;
+   46 : 	@Wire Datebox date;
+   47 : 	@Wire Listbox list;
+   48 : 	
+   49 : 	// conversation state
+   50 : 	ListModelList<Reminder> listModelList;	
+   51 : 	Reminder selectedReminder = new Reminder();
+   52 : 	
+   53 : 	@Override
+   54 : 	public void doAfterCompose(Window comp) throws Exception {
+   55 : 		super.doAfterCompose(comp); // super method wires the components
+   56 : 		// load the data and bind to the list then set self as list renderer
+   57 : 		listModelList = new ListModelList<Reminder>();
+   58 : 		List<Reminder> reminders = reminderService.findAll();
+   59 : 		listModelList.addAll(reminders);
+   60 : 		list.setModel(listModelList);
+   61 : 		list.setItemRenderer(this);
+   62 : 	}
+   63 : 	
+   64 : 	@Listen("onSelect = #list")
+   65 : 	public void select(SelectEvent<Listitem, Reminder> e){
+   66 : 		selectedReminder = e.getSelectedObjects().iterator().next();
+   67 : 		date.setValue(selectedReminder.getDate());
+   68 : 		priority.setValue(selectedReminder.getPriority());
+   69 : 		name.setValue(selectedReminder.getName());
+   70 : 		return;
+   71 : 	}
+   72 : 
+   73 : 	@Listen("onClick = #add")
+   74 : 	public void add(Event e) {
+   75 : 		Date dateValue = date.getValue();
+   76 : 		Integer priorityValue = priority.getValue();
+   77 : 		String nameValue = name.getValue();
+   78 : 		if( dateValue != null && priorityValue != null && nameValue != null ){
+   79 : 			Reminder reminder = new Reminder();
+   80 : 			reminder.setDate(date.getValue());
+   81 : 			reminder.setName(name.getValue());
+   82 : 			reminder.setPriority(priority.getValue());
+   83 : 			this.reminderService.persist(reminder);
+   84 : 			List<Reminder> reminders = this.reminderService.findAll();
+   85 : 			this.listModelList.clear();
+   86 : 			this.listModelList.addAll(reminders);
+   87 : 			this.selectedReminder = reminder;
+   88 : 		}
+   89 : 	}
+   90 : 
+   91 : 	@Listen("onClick = #update")
+   92 : 	public void update(Event e) {
+   93 : 		if( selectedReminder != null ){
+
+  116 : 		}
+  117 : 	}
+  118 : 
+  119 : 	@Listen("onClick = #delete")
+  120 : 	public void delete(Event e) {
+
+  142 : 	}
+  143 : 
+  144 : 	protected SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy");
+  145 : 	
+  146 : 	@Override
+  147 : 	public void render(Listitem listItem, Reminder reminder, int index) throws Exception {
+  148 : 		new Listcell(reminder.getName()).setParent(listItem);
+  149 : 		new Listcell(reminder.getPriority()+"").setParent(listItem);
+  150 : 		new Listcell(dateFormat.format(reminder.getDate())).setParent(listItem);
+  151 : 	}
+  152 : 
+  153 : }
++--------------------------
+
+Summary 
+
+  This article has presented an overview of the implementation of three rich client GUI patterns using ZK. The definition of the patterns given by Martin Fowler provides a clear statement of intent; they are strategies to organize rich GUI code. 
+
+  An architectural pattern is an abstract concept; any implementation is an interpretation of an outline. The implementation has a context (framework, existing code, skills, requirements, process) which moderates the approach. The sample screen presented in this article application is trivial in nature. It would be ill advised to extrapolate the simple implementations as presented to a full scale system. Instead the examples serve only to encourage discussion as to the paths open to developers when using the ZK Framework; they are not a map but a suggestion of possible routes. To ask the question "which is the best strategy?" may be asking the question "who is first amongst equals?". Each pattern is an outline approach that has emerged in a response to real world experiences; as such they are each distilled wisdom. 

@@ -2,8 +2,7 @@
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native">
 	<window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')"
-		binder="@init(queueName='cityqueue',queueScope='desktop')">
+		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
 
 		<gmaps id="mymap" version="3.5" width="600px" height="450px"
 			showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"

@@ -5,6 +5,7 @@
 	<artifactId>zkmongogmaps</artifactId>
 	<version>1.0</version>
 	<packaging>war</packaging>
+	<url>https://github.com/simbo1905/zkmongomaps</url>
 
 	<properties>
 		<zk.version>6.5.1</zk.version>
