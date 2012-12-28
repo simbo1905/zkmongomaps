@@ -12,12 +12,12 @@ The Screen
 
 [./images/screen.png] Sample Screen
 
-  The screen renders simple City entity which are defined within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/City.java}City.java}}. The entities are marked with @Document and @Id Spring Data persistence annotations. The remainder of the class are simply properties which Spring Data maps to a MongoDB document using relection. 
+  The screen renders simple Zipcode entities which are defined within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/Zipcode.java}Zipcode.java}} outlined below: 
   
 +--------------------------
 
 	08 @Document
-	09 public class City {
+	09 public class Zipcode {
 	10 	@Id
 	11 	private String _id;
 	12 	
@@ -51,145 +51,70 @@ The Screen
 
 
 +--------------------------
-  
+
+  The entity class is marked with Spring Data persistence annotations @Document and @Id. This marks the entity for mapping into MongoDB and defines the document primary key. The remainder of the class are basic properties which Spring Data maps into MongoDB documents using relection. 
+
   The screen is defined within a single ZUL page withing the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}} Here is the entire ZUL screen: 
 
 +--------------------------
 
 	   <?xml version="1.0" encoding="UTF-8"?>
-	02 <zk xmlns:n="native">
-	03   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
-	04     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
-	05 
-	06     <gmaps id="mymap" version="3.5" width="600px" height="450px"
-	07       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
-	08       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
-	09     </gmaps>
-	10 
-	11     <vbox width="600px">
-	12       <listbox height="330px" model="@bind(vm.cities)"
-	13         selectedItem="@bind(vm.pickedCity)">
-	14         <listhead>
-	15           <listheader label="Id" />
-	16           <listheader label="Name" />
-	17           <listheader label="State" />
-	18           <listheader label="Population" />
-	19         </listhead>
-	20         <template name="model" var="city">
-	21           <listitem>
-	22             <listcell label="@bind(city._id)" />
-	23             <listcell label="@bind(city.city)" />
-	24             <listcell label="@bind(city.state)" />
-	25             <listcell label="@bind(city.pop)" />
-	26           </listitem>
-	27         </template>
-	28       </listbox>
-	29       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	30         activePage="@save(vm.activePage)" />
-	31     </vbox>
-	32   </window>
-	33   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
-	34 </zk>
+	02 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+	03 <zk xmlns:n="native">
+	04   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
+	05     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.ZipcodeViewModel')">
+	06 
+	07     <gmaps id="mymap" version="3.5" width="600px" height="450px" showSmallCtrl="true" 
+	08       lat="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lat : 51)"
+	09       lng="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lng : 0)">
+	10     </gmaps>
+	11 
+	12     <vbox width="600px">
+	13       <listbox height="330px" model="@load(vm.zipcodes)"
+	14         selectedItem="@save(vm.pickedZipcode)">
+	15         <listhead>
+	16           <listheader label="Id" />
+	17           <listheader label="Name" />
+	18           <listheader label="State" />
+	19           <listheader label="Population" />
+	20         </listhead>
+	21         <template name="model" var="zipcode">
+	22           <listitem>
+	23             <listcell label="@load(zipcode._id)" />
+	24             <listcell label="@load(zipcode.city)" />
+	25             <listcell label="@load(zipcode.state)" />
+	26             <listcell label="@load(zipcode.pop)" />
+	27           </listitem>
+	28         </template>
+	29       </listbox>
+	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	31         activePage="@save(vm.activePage)" />
+	32     </vbox>
+	33   </window>
+	34   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
+	35 </zk>
 
 +--------------------------
 
-  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. Lines 4 and 5 of the ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component: 
+  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. Lines 8 and 9 of the ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component as highlighted below: 
   
 +--------------------------
 
 	<gmaps 
-	lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
-	lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+	lat="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lat : 51)"
+	lng="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lng : 0)">
 	</gmaps>
 
 +--------------------------
   
-  The two @load databindings are EL expression defining null save bindings onto the corresponding properties of the 'vm.pickedCity' object. Whenever the 'pickedCity' attribute of the ViewModel is updated to be a new city the 'lat' and 'lng' properties will be loaded into the gmaps component.  
-
-+--------------------------
-    1 : package org.zkforge.zktodo2.ui;
-
-   34 : @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
-   35 : public class Presenter extends SelectorComposer<Window> implements
-   36 : 		ListitemRenderer<Reminder> {
-
-   40 : 	// auto-wired property
-   41 : 	@WireVariable ReminderService reminderService;
-   42 : 
-   43 : 	// components
-   44 : 	@Wire Textbox name;
-   45 : 	@Wire Intbox priority;
-   46 : 	@Wire Datebox date;
-   47 : 	@Wire Listbox list;
-   48 : 	
-   49 : 	// conversation state
-   50 : 	ListModelList<Reminder> listModelList;	
-   51 : 	Reminder selectedReminder = new Reminder();
-   52 : 	
-   53 : 	@Override
-   54 : 	public void doAfterCompose(Window comp) throws Exception {
-   55 : 		super.doAfterCompose(comp); // super method wires the components
-   56 : 		// load the data and bind to the list then set self as list renderer
-   57 : 		listModelList = new ListModelList<Reminder>();
-   58 : 		List<Reminder> reminders = reminderService.findAll();
-   59 : 		listModelList.addAll(reminders);
-   60 : 		list.setModel(listModelList);
-   61 : 		list.setItemRenderer(this);
-   62 : 	}
-   63 : 	
-   64 : 	@Listen("onSelect = #list")
-   65 : 	public void select(SelectEvent<Listitem, Reminder> e){
-   66 : 		selectedReminder = e.getSelectedObjects().iterator().next();
-   67 : 		date.setValue(selectedReminder.getDate());
-   68 : 		priority.setValue(selectedReminder.getPriority());
-   69 : 		name.setValue(selectedReminder.getName());
-   70 : 		return;
-   71 : 	}
-   72 : 
-   73 : 	@Listen("onClick = #add")
-   74 : 	public void add(Event e) {
-   75 : 		Date dateValue = date.getValue();
-   76 : 		Integer priorityValue = priority.getValue();
-   77 : 		String nameValue = name.getValue();
-   78 : 		if( dateValue != null && priorityValue != null && nameValue != null ){
-   79 : 			Reminder reminder = new Reminder();
-   80 : 			reminder.setDate(date.getValue());
-   81 : 			reminder.setName(name.getValue());
-   82 : 			reminder.setPriority(priority.getValue());
-   83 : 			this.reminderService.persist(reminder);
-   84 : 			List<Reminder> reminders = this.reminderService.findAll();
-   85 : 			this.listModelList.clear();
-   86 : 			this.listModelList.addAll(reminders);
-   87 : 			this.selectedReminder = reminder;
-   88 : 		}
-   89 : 	}
-   90 : 
-   91 : 	@Listen("onClick = #update")
-   92 : 	public void update(Event e) {
-   93 : 		if( selectedReminder != null ){
-
-  116 : 		}
-  117 : 	}
-  118 : 
-  119 : 	@Listen("onClick = #delete")
-  120 : 	public void delete(Event e) {
-
-  142 : 	}
-  143 : 
-  144 : 	protected SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy");
-  145 : 	
-  146 : 	@Override
-  147 : 	public void render(Listitem listItem, Reminder reminder, int index) throws Exception {
-  148 : 		new Listcell(reminder.getName()).setParent(listItem);
-  149 : 		new Listcell(reminder.getPriority()+"").setParent(listItem);
-  150 : 		new Listcell(dateFormat.format(reminder.getDate())).setParent(listItem);
-  151 : 	}
-  152 : 
-  153 : }
+  These databindings are EL expression defining null-safe bindings onto the corresponding properties of the 'vm.pickedZipcode' object. Whenever the 'pickedZipcode' attribute of the ViewModel is updated to be a new city object the 'lat' and 'lng' properties will be loaded into the gmaps component. This causes the google maps component to show the location of the zip code. 
+  
+  Line 14 has the @save databinding applied to the 'selectedItem' attribute of the listbox: 
+  
 +--------------------------
 
-Summary 
+	<listbox 
+	selectedItem="@save(vm.pickedZipcode)">
 
-  This article has presented an overview of the implementation of three rich client GUI patterns using ZK. The definition of the patterns given by Martin Fowler provides a clear statement of intent; they are strategies to organize rich GUI code. 
-
-  An architectural pattern is an abstract concept; any implementation is an interpretation of an outline. The implementation has a context (framework, existing code, skills, requirements, process) which moderates the approach. The sample screen presented in this article application is trivial in nature. It would be ill advised to extrapolate the simple implementations as presented to a full scale system. Instead the examples serve only to encourage discussion as to the paths open to developers when using the ZK Framework; they are not a map but a suggestion of possible routes. To ask the question "which is the best strategy?" may be asking the question "who is first amongst equals?". Each pattern is an outline approach that has emerged in a response to real world experiences; as such they are each distilled wisdom. 
++--------------------------  
+  

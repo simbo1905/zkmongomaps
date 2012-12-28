@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.github.simbo1905.zkmongogmaps.app.City;
-import org.github.simbo1905.zkmongogmaps.app.CityConfig;
-import org.github.simbo1905.zkmongogmaps.app.CityRepository;
+import org.github.simbo1905.zkmongogmaps.app.Zipcode;
+import org.github.simbo1905.zkmongogmaps.app.ZipcodeAppConfig;
+import org.github.simbo1905.zkmongogmaps.app.ZipcodeRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,41 +43,41 @@ import com.mongodb.DBCollection;
  * @see https://github.com/ttrelle/spring-data-examples
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes=CityConfig.class )
+@ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes=ZipcodeAppConfig.class )
 public class CityRepositoryTests {
 
 	private static final Point DUS = new Point( 6.810036, 51.224088 );
 
-	private static final City BERLIN = new City("Berlin", "Berlin", 3515473, 13.405838, 52.531261  );
+	private static final Zipcode BERLIN = new Zipcode("Berlin", "Berlin", 3515473, 13.405838, 52.531261  );
 
-	private static final City COLOGNE =  new City("Cologne", "North Rhine-Westphalia", 1017155, 6.921272, 50.960157 );
+	private static final Zipcode COLOGNE =  new Zipcode("Cologne", "North Rhine-Westphalia", 1017155, 6.921272, 50.960157 );
 
-	private static final City DUSSELDORF = new City("Düsseldorf", "North Rhine-Westphalia", 592393, 6.810036, 51.224088 );
+	private static final Zipcode DUSSELDORF = new Zipcode("Düsseldorf", "North Rhine-Westphalia", 592393, 6.810036, 51.224088 );
 	
 	@Inject
-	protected CityRepository cityRepository = null;
+	protected ZipcodeRepository cityRepository = null;
 	
 	@Inject
 	MongoOperations mongoOperations;
 	
 	@Before
 	public void setUp() {
-		mongoOperations.indexOps(City.class).ensureIndex( new GeospatialIndex("loc") );
-		String collectionName = MongoCollectionUtils.getPreferredCollectionName(City.class);
+		mongoOperations.indexOps(Zipcode.class).ensureIndex( new GeospatialIndex("loc") );
+		String collectionName = MongoCollectionUtils.getPreferredCollectionName(Zipcode.class);
 		DBCollection collection = mongoOperations.getCollection(collectionName);
-		mongoOperations.indexOps(City.class).ensureIndex( new GeospatialIndex("loc") );
+		mongoOperations.indexOps(Zipcode.class).ensureIndex( new GeospatialIndex("loc") );
 		collection.remove(BasicDBObjectBuilder.start().get()); // wild card remove
 	}
 	
 	@Test
 	public void testRoundTripSimple() throws Exception {
 		// given a city
-		City city = new City(null,"ACMAR","AL",6055, new double[]{-86.51557d,33.584132d});
+		Zipcode city = new Zipcode(null,"ACMAR","AL",6055, new double[]{-86.51557d,33.584132d});
 		
 		// when roundtrip to db
 		this.cityRepository.save(city);
-		Collection<City> fromDbCollection = this.cityRepository.findByState("AL");
-		City cityDb = fromDbCollection.iterator().next();
+		Collection<Zipcode> fromDbCollection = this.cityRepository.findByState("AL");
+		Zipcode cityDb = fromDbCollection.iterator().next();
 		
 		// then assert equal by value
 		Assert.assertEquals(city, cityDb);
@@ -91,7 +91,7 @@ public class CityRepositoryTests {
 		mongoOperations.save( DUSSELDORF );
 		
 		// when
-		List<City> locations = this.cityRepository.findByLocNear(DUS , new Distance(70, Metrics.KILOMETERS) );
+		List<Zipcode> locations = this.cityRepository.findByLocNear(DUS , new Distance(70, Metrics.KILOMETERS) );
 		
 		// then
 		Assert.assertThat(locations.size(), is(2));
@@ -106,7 +106,7 @@ public class CityRepositoryTests {
 		mongoOperations.save( DUSSELDORF );
 		
 		// when
-		List<City> locations = cityRepository.findByLocWithin(new Circle(DUS.getX(), DUS.getY(),
+		List<Zipcode> locations = cityRepository.findByLocWithin(new Circle(DUS.getX(), DUS.getY(),
 				1.0));
 
 		// then
@@ -122,7 +122,7 @@ public class CityRepositoryTests {
 		mongoOperations.save( DUSSELDORF );
 		
 		// when
-		List<City> locations = cityRepository.findByLocWithin(new Box(new Point(
+		List<Zipcode> locations = cityRepository.findByLocWithin(new Box(new Point(
 				DUS.getX()-0.5, DUS.getY()-0.5), new Point(DUS.getX()+0.5, DUS.getY()+0.5)));
 
 		// then
@@ -141,19 +141,19 @@ public class CityRepositoryTests {
 		// when
 		
 		Pageable firstPageableOfTwo = new PageRequest(0,2);
-		Page<City> firstPageOfTwo = cityRepository.findAll(firstPageableOfTwo );
+		Page<Zipcode> firstPageOfTwo = cityRepository.findAll(firstPageableOfTwo );
 		Pageable secondPageableOfTwo = new PageRequest(1,2);
-		Page<City> secondPageOfTwo = cityRepository.findAll(secondPageableOfTwo);
+		Page<Zipcode> secondPageOfTwo = cityRepository.findAll(secondPageableOfTwo);
 		
 		// then
 		
-		List<City> firstList = Lists.newArrayList(firstPageOfTwo.iterator());
+		List<Zipcode> firstList = Lists.newArrayList(firstPageOfTwo.iterator());
 		Assert.assertThat(firstList.size(),is(2));
 		
-		List<City> secondList = Lists.newArrayList(secondPageOfTwo.iterator());
+		List<Zipcode> secondList = Lists.newArrayList(secondPageOfTwo.iterator());
 		Assert.assertThat(secondList.size(),is(1));
 		
-		List<City> combined = Lists.newArrayList(Iterables.concat(firstList,secondList));
+		List<Zipcode> combined = Lists.newArrayList(Iterables.concat(firstList,secondList));
 		
 		Assert.assertThat(combined, hasItem(BERLIN));
 		Assert.assertThat(combined, hasItem(COLOGNE));

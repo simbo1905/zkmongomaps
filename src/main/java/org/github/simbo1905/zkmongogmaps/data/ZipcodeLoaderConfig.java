@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @ComponentScan(basePackages = "org.github.simbo1905.zkmongogmaps.data")
 @Configuration
-public class CityLoaderConfig {
+public class ZipcodeLoaderConfig {
 	public @Bean
-	CityLoaderApplicationListener cityLoaderApplicationListener() {
-		return new CityLoaderApplicationListener();
+	ZipcodeLoaderApplicationListener cityLoaderApplicationListener() {
+		return new ZipcodeLoaderApplicationListener();
 	}
 	
 }

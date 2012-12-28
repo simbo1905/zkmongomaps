@@ -2,28 +2,28 @@
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native">
 	<window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
+		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.ZipcodeViewModel')">
 
 		<gmaps id="mymap" version="3.5" width="600px" height="450px" showSmallCtrl="true" 
-			lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
-			lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+			lat="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lat : 51)"
+			lng="@load(vm.pickedZipcode ne null ? vm.pickedZipcode.lng : 0)">
 		</gmaps>
 
 		<vbox width="600px">
-			<listbox height="330px" model="@load(vm.cities)"
-				selectedItem="@save(vm.pickedCity)">
+			<listbox height="330px" model="@load(vm.zipcodes)"
+				selectedItem="@save(vm.pickedZipcode)">
 				<listhead>
 					<listheader label="Id" />
 					<listheader label="Name" />
 					<listheader label="State" />
 					<listheader label="Population" />
 				</listhead>
-				<template name="model" var="city">
+				<template name="model" var="zipcode">
 					<listitem>
-						<listcell label="@load(city._id)" />
-						<listcell label="@load(city.city)" />
-						<listcell label="@load(city.state)" />
-						<listcell label="@load(city.pop)" />
+						<listcell label="@load(zipcode._id)" />
+						<listcell label="@load(zipcode.city)" />
+						<listcell label="@load(zipcode.state)" />
+						<listcell label="@load(zipcode.pop)" />
 					</listitem>
 				</template>
 			</listbox>
@@ -33,4 +33,3 @@
 	</window>
 	Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
 </zk>
-

@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.github.simbo1905.zkmongogmaps.app.City;
+import org.github.simbo1905.zkmongogmaps.app.Zipcode;
 
 
 import com.google.gson.Gson;
@@ -20,19 +20,19 @@ import com.google.gson.stream.JsonReader;
  * object per line but the overally file is not an array or other single 
  * structure
  */
-public class CityLoader {
+public class ZipcodeLoader {
 	Gson gson = new Gson();
 
 	/**
 	 * loads the each line as a separate json structure
 	 */
-	public List<City> readJsonStream(InputStream in) throws Exception {
-		List<City> messages = new ArrayList<City>();
+	public List<Zipcode> readJsonStream(InputStream in) throws Exception {
+		List<Zipcode> messages = new ArrayList<Zipcode>();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			String str;
 			while ((str = reader.readLine()) != null) {
-				City city = process(str);
+				Zipcode city = process(str);
 				messages.add(city);
 			}
 			reader.close();
@@ -42,10 +42,10 @@ public class CityLoader {
 		return messages;
 	}
 
-	private City process(String str) throws Exception {
+	private Zipcode process(String str) throws Exception {
 		JsonReader reader = new JsonReader(new InputStreamReader(new ByteArrayInputStream(str.getBytes("UTF-8")),
 				"UTF-8"));
-		City city = gson.fromJson(reader, City.class);
+		Zipcode city = gson.fromJson(reader, Zipcode.class);
 		return city;
 	}
 }

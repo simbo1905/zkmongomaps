@@ -11,14 +11,14 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CityRepository extends MongoRepository<City, String> {
+public interface ZipcodeRepository extends MongoRepository<Zipcode, String> {
 
 	@Query("{ state: ?0 }")
-	List<City> findByState(String state);
+	List<Zipcode> findByState(String state);
 
-	List<City> findByLocWithin(Circle c);
+	List<Zipcode> findByLocWithin(Circle c);
 
-	List<City> findByLocWithin(Box b);
+	List<Zipcode> findByLocWithin(Box b);
 
-	List<City> findByLocNear(Point p, Distance d);
+	List<Zipcode> findByLocNear(Point p, Distance d);
 }

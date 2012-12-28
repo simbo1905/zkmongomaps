@@ -18,7 +18,7 @@ import com.mongodb.Mongo;
 @PropertySource({ "classpath:zkmongogmaps.properties" })
 @EnableMongoRepositories
 @Configuration
-public class CityConfig {
+public class ZipcodeAppConfig {
 
 	@Autowired
 	Environment env;

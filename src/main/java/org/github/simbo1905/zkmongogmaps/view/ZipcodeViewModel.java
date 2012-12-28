@@ -2,29 +2,27 @@ package org.github.simbo1905.zkmongogmaps.view;
 
 import java.util.List;
 
-import org.github.simbo1905.zkmongogmaps.app.City;
-import org.github.simbo1905.zkmongogmaps.app.CityRepository;
+import org.github.simbo1905.zkmongogmaps.app.Zipcode;
+import org.github.simbo1905.zkmongogmaps.app.ZipcodeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.zkoss.bind.annotation.BindingParam;
-import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 
 import com.google.common.collect.Lists;
 
-public class CityViewModel {
+public class ZipcodeViewModel {
 
 	@WireVariable
-	protected CityRepository cityRepository = null;
+	protected ZipcodeRepository zipcodeRepository = null;
 	
 	int pageSize = 10;
 	int activePage = 0;
 	
 	public long getTotalSize()
 	{
-		return cityRepository.count();
+		return zipcodeRepository.count();
 	}
 	
 	public Integer getPageSize()
@@ -32,31 +30,27 @@ public class CityViewModel {
 		return pageSize;
 	}
 
-	@NotifyChange("cities")
+	@NotifyChange("zipcodes")
 	public void setActivePage(int activePage)
 	{
 		this.activePage = activePage;
 	}
 
-	public List<City> getCities()
+	public List<Zipcode> getZipcodes()
 	{
 		Pageable pageable = new PageRequest(activePage,pageSize);
-		Page<City> page = cityRepository.findAll(pageable);
+		Page<Zipcode> page = zipcodeRepository.findAll(pageable);
 		return Lists.newArrayList(page.iterator());
 	}
 	
-	protected City pickedCity = null;
+	protected Zipcode pickedZipcode = null;
 
-	public City getPickedCity() {
-		return pickedCity;
+	public Zipcode getPickedZipcode() {
+		return pickedZipcode;
 	}
 
-	public void setPickedCity(City pickedCity) {
-		this.pickedCity = pickedCity;
+	public void setPickedZipcode(Zipcode pickedZipcode) {
+		this.pickedZipcode = pickedZipcode;
 	}
-	
-	@GlobalCommand("cityChange") public void changedCity(@BindingParam("data") City city) {
-		return;
-	}
-	
+
 }

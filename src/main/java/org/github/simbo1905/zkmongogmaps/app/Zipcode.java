@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class City {
+public class Zipcode {
 	@Id
 	private String _id;
 	
@@ -18,14 +18,14 @@ public class City {
 
 	private String city;
 
-	public City(String name, String state, int pop, double lat, double lon) {
+	public Zipcode(String name, String state, int pop, double lat, double lon) {
 		this.city = name;
 		this.state = state;
 		this.pop = pop;
 		this.loc = new double[]{lat,lon};
 	}	
 	
-	public City(String _id, String name, String state, int pop, double[] loc) {
+	public Zipcode(String _id, String name, String state, int pop, double[] loc) {
 		this._id = _id;
 		this.city = name;
 		this.state = state;
@@ -33,7 +33,7 @@ public class City {
 		this.loc = loc;
 	}
 	
-	public City() {
+	public Zipcode() {
 		
 	}
 
@@ -105,7 +105,7 @@ public class City {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		City other = (City) obj;
+		Zipcode other = (Zipcode) obj;
 		if (_id == null) {
 			if (other._id != null)
 				return false;

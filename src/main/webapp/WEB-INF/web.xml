@@ -14,14 +14,14 @@
 	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>org.github.simbo1905.zkmongogmaps.app.CityConfig,org.github.simbo1905.zkmongogmaps.data.CityLoaderConfig</param-value>
+		<param-value>org.github.simbo1905.zkmongogmaps.app.ZipcodeAppConfig,org.github.simbo1905.zkmongogmaps.data.ZipcodeLoaderConfig</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<!-- test data loader  -->
 	<listener>
-		<listener-class>org.github.simbo1905.zkmongogmaps.data.CityLoaderApplicationListener</listener-class>
+		<listener-class>org.github.simbo1905.zkmongogmaps.data.ZipcodeLoaderApplicationListener</listener-class>
 	</listener>
 	<listener>
 		<description>
