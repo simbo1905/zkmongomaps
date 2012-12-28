@@ -4,7 +4,7 @@
 
 Introduction
 
-  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database. In this article will will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse pages of zipcode data.  The sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
+  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database. In this article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse pages of zipcode data. The sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
 
 The Screen
 
@@ -12,48 +12,100 @@ The Screen
 
 [./images/screen.png] Sample Screen
 
+  The screen renders simple City entity which are defined within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/City.java}City.java}}. The entities are marked with @Document and @Id Spring Data persistence annotations. The remainder of the class are simply properties which Spring Data writes out as a MongoDB document using relection. 
+  
++--------------------------
+
+	08 @Document
+	09 public class City {
+	10 	@Id
+	11 	private String _id;
+	12 	
+	13 	private int pop = 0;
+	14 	
+	15 	private String state = null;
+	16 	
+	17 	private double[] loc;
+	18 
+	19 	private String city;
+	
+		// getters setters constructors
+		
+		// expose mongo geospacial pair as properties for screen
+	
+	72 	public double[] getLoc() {
+	73 		return loc;
+	74 	}
+	75 
+	76 	public float getLng() {
+	77 		return (float) loc[0];
+	78 	}
+	79 
+	80 	public float getLat() {
+	81 		return (float) loc[1];
+	82 	}
+	83 
+	84 	public void setLat(float lat) {
+	85 		loc[1] = lat;
+	86 	}
+
+
++--------------------------
+  
   The screen is defined within a single ZUL page withing the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}} Here is the entire ZUL screen: 
 
 +--------------------------
+
 	   <?xml version="1.0" encoding="UTF-8"?>
 	02 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 	03 <zk xmlns:n="native">
 	04   <window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
-	05     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')"
-	06     binder="@init(queueName='cityqueue',queueScope='desktop')">
-	07 
-	08     <gmaps id="mymap" version="3.5" width="600px" height="450px"
-	09       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
-	10       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
-	11     </gmaps>
-	12 
-	13     <vbox width="600px">
-	14       <listbox height="330px" model="@bind(vm.cities)"
-	15         selectedItem="@bind(vm.pickedCity)">
-	16         <listhead>
-	17           <listheader label="Id" />
-	18           <listheader label="Name" />
-	19           <listheader label="State" />
-	20           <listheader label="Population" />
-	21         </listhead>
-	22         <template name="model" var="city">
-	23           <listitem>
-	24             <listcell label="@bind(city._id)" />
-	25             <listcell label="@bind(city.city)" />
-	26             <listcell label="@bind(city.state)" />
-	27             <listcell label="@bind(city.pop)" />
-	28           </listitem>
-	29         </template>
-	30       </listbox>
-	31       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	32         activePage="@save(vm.activePage)" />
-	33     </vbox>
-	34   </window>
-	35   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
-	36 </zk>
+	05     viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
+	06 
+	07     <gmaps id="mymap" version="3.5" width="600px" height="450px"
+	08       showSmallCtrl="true" lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
+	09       lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+	10     </gmaps>
+	11 
+	12     <vbox width="600px">
+	13       <listbox height="330px" model="@bind(vm.cities)"
+	14         selectedItem="@bind(vm.pickedCity)">
+	15         <listhead>
+	16           <listheader label="Id" />
+	17           <listheader label="Name" />
+	18           <listheader label="State" />
+	19           <listheader label="Population" />
+	20         </listhead>
+	21         <template name="model" var="city">
+	22           <listitem>
+	23             <listcell label="@bind(city._id)" />
+	24             <listcell label="@bind(city.city)" />
+	25             <listcell label="@bind(city.state)" />
+	26             <listcell label="@bind(city.pop)" />
+	27           </listitem>
+	28         </template>
+	29       </listbox>
+	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	31         activePage="@save(vm.activePage)" />
+	32     </vbox>
+	33   </window>
+	34   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
+	35 </zk>
+
 +--------------------------
 
-  Here are extracts from the Java file:
+  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. Lines 4 and 5 of the ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component: 
+  
++--------------------------
+
+	<gmaps 
+	lat="@load(vm.pickedCity ne null ? vm.pickedCity.lat : 51)"
+	lng="@load(vm.pickedCity ne null ? vm.pickedCity.lng : 0)">
+	</gmaps>
+
++--------------------------
+  
+  The two @load databindings are EL expression defining null save bindings onto the corresponding properties of the 'vm.pickedCity' object. Whenever the 'pickedCity' attribute of the ViewModel is updated to be a new city the 'lat' and 'lng' properties will be loaded into the gmaps component.  
 
 +--------------------------
     1 : package org.zkforge.zktodo2.ui;

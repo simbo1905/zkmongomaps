@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native">
 	<window border="none" width="600px" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.github.simbo1905.zkmongogmaps.view.CityViewModel')">
