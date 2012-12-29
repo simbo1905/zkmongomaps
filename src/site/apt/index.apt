@@ -4,7 +4,7 @@
 
 Introduction
 
-  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database. In this article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse pages of zipcode data. The sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
+  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database known as "serverside pagination". Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse the {{{media.mongodb.org/zips.json}zips.json}} zipcode dataset efficiently with very little code. The sample sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
 
 The Screen
 
@@ -29,9 +29,9 @@ The Screen
 	18 
 	19 	private String city;
 	
-		// getters setters constructors
+		// getters, setters, constructors
 		
-		// expose mongo geospacial pair as properties for screen
+		// expose mongo geospacial pair as simple properties for screen
 	
 	72 	public double[] getLoc() {
 	73 		return loc;
@@ -52,22 +52,21 @@ The Screen
 
 +--------------------------
 
-  The entity class is marked with Spring Data persistence annotations <<@Document>> and <<@Id>>. This marks the entity for mapping into MongoDB and defines the document primary key. The remainder of the class are basic properties which Spring Data maps into MongoDB documents using relection. 
+  The entity class is marked with Spring Data persistence annotations <<<@Document>>> and <<<@Id>>>. This marks the entity for mapping into a MongoDB document database and defines the document primary key. The remainder of the class defines simple properties that Spring Data MongoDb will map into documents using relection. 
 
 Data Access
 
-  The data access layer is provided by the ZipcodeRepository interface: 
+  The data access layer is provided by a single file which defines the ZipcodeRepository interface. No implimentation of the class is given within the sample sourcecode; the Spring Data MongoDB framework generates an implimentation at runtime. 
   
 +--------------------------
 
 	@Repository
 	public interface ZipcodeRepository extends MongoRepository<Zipcode, String> {
-	
 	}
 
 +--------------------------
 
-  <<MongoRepository>> extends both <<CrudRepository>> and <<PagingAndSortingRepository>> for basic data access and paging behaviour. No implimentation of the class is given within the sourcecode; the Spring Data MongoDB framework generates the implimentation class at runtime. It is the generated class which provides PagingAndSortingRepository findAll method used by the screen:
+  <<<MongoRepository>>> extends both <<<CrudRepository>>> and <<<PagingAndSortingRepository>>> for basic data access and paging behaviour. It is the generated class which provides all the CRUD and pagination logic used in the sample sourcecode including the <<<findAll>>> method used by the screen:
   
 +--------------------------
 
@@ -75,7 +74,7 @@ Data Access
 
 +--------------------------  
 
-  Better yet the Spring Data MongoDB framework can generate query detailed query methods based on carefully named method signaturess. Within the sample code are junit test that exercise basic and geospatial queries unused by the screen. For example the following methods specify queries by 'state' or 'loc' on the Zipcode collection: 
+  Better yet the Spring Data MongoDB framework can generate custom query logic based on carefully named method signatures. Within the sample sourcecode are junit tests which exercise basic and geospatial queries not used by the screen. For example adding the following methods signitures to the <<<ZipcodeRepository>>> interface will generate a query by <<<state>>> and a geospatial distance query on the <<<loc>>> attribute: 
   
 +--------------------------
 
@@ -85,11 +84,11 @@ Data Access
 
 +--------------------------
 
-  These are covered in detail by Tobias Trelle blog {{{hhttp://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/}Spring Data Ð Part 4: Geospatial Queries with MongoDB}}
+  The geospatial capabilities of Spring Data Mongodb are covered in detail by Tobias Trelle's blog {{{hhttp://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/}Spring Data Part 4: Geospatial Queries with MongoDB}}
 
 The Screen File
 
-  The screen is defined within a single ZUL page withing the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}} Here is the entire ZUL screen: 
+  The screen is defined within a single ZUL page within the file {{{https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul}index.zul}}. Here is the entire ZUL screen: 
 
 +--------------------------
 
@@ -122,20 +121,22 @@ The Screen File
 	27           </listitem>
 	28         </template>
 	29       </listbox>
-	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	31         activePage="@save(vm.activePage)" />
-	32     </vbox>
-	33   </window>
-	34   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
-	35 </zk>
+	30
+	31       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	32         activePage="@save(vm.activePage)" />
+	33     </vbox>
+	34
+	35   </window>
+	36   Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
+	37 </zk>
 
 +--------------------------
 
-  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. At line 4 the framework binder org.zkoss.bind.BindComposer is applied to the window component. At line 5 the viewmodel of the page is set as an instance of the <<ZipCodeViewModel>> class given the variable name 'vm'.  
+  The ZUL file makes use of the framework support for the MVVM pattern using {{{http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM}ZK Bind}}. The framework binder <<<org.zkoss.bind.BindComposer>>> is applied to the window component at line 4. This activates databindings within the XML attributes which bind screen properties onto the serverside java code. The viewmodel of the page is set as an instance of the <<<ZipCodeViewModel>>> class and assigned the variable name <<<vm>>> at line 5. The details of the viewmodel and the databinding that drive the screen behaviours are detailed in the following sections. 
   
 The ViewModel
   
-  The viewmodel class is presented in its entirety below: 
+  Here is the entire viewmodel class: 
   
 +--------------------------
   
@@ -184,7 +185,9 @@ The ViewModel
 
 +--------------------------
   
-  The ZUL contain @load databindings for the 'lat' and 'lng' properties of the gmaps component as highlighted below: 
+  The viewmodel is the Presentation Model of the screen in the style of the MVVM design pattern. A detailed discussion of the design pattern is covered in the paper {{{http://www.ibm.com/developerworks/websphere/zones/portal/proddoc/zkjavaajax/}Implementing event-driven GUI patterns using the ZK Java AJAX framework}}. Within the sample sourcecode the viewmodel mediates the screens interaction with the the <<<zipcodeRepository>>> and holds the domain state of the screen. The <<<zipcodeRepository>>> is injected by ZK in response to the <<<@WireVariable>>> annotation. The ZUL file configures the ZK Spring <<<DelegatingVariableResolver>>> as the variable resolver. This causes ZK to request the corresponding spring bean which is an instance of the generated data access class.  
+
+  The XML contains <<<@load>>> databindings for the <<<lat>>> and <<<lng>>> properties of the gmaps component as highlighted below: 
   
 +--------------------------
 
@@ -195,9 +198,9 @@ The ViewModel
 
 +--------------------------
   
-  These databindings are EL expression defining null-safe bindings onto the corresponding properties of the 'vm.pickedZipcode'. This is the entity  within the attribute at line 46 of the <<ZipcodeViewModel>>. Whenever the 'pickedZipcode' attribute of the viewmodel is updated to be a new entity the 'lat' and 'lng' properties will be loaded into the gmaps component. This causes the google maps component to show the location of the zipcode. 
+  These databindings are EL expression defining null-safe bindings onto the corresponding properties of the <<<vm.pickedZipcode>>>. This is the entity  within the <<<pickedZipcode>>> attribute of <<<ZipcodeViewModel>>>. Whenever the <<<pickedZipcode>>> attribute of the viewmodel is updated to be a new entity the <<<lat>>> and <<<lng>>> properties will be loaded into the gmaps component. This causes the google maps component to show the location of the zipcode. 
   
-  Line 14 has the @save databinding applied to the 'selectedItem' attribute of the listbox which writes into the 'pickedZipcode' attribute of the viewmodel: 
+  The Listbox within the screen has a <<<@save>>> databinding applied to the <<<selectedItem>>> attribute. This causes the listbox to write to the <<<pickedZipcode>>> attribute of the viewmodel: 
   
 +--------------------------
 
@@ -206,7 +209,7 @@ The ViewModel
 
 +--------------------------  
 
-  The listbox 'selectedItem' databinding logically binds the use click in the listbox to an update of the viewmodel. As the same viewmodel attribute is bound to the gmaps component clicking on an item in the listbox has the effect of updating the location on the map. 
+  The listbox <<<selectedItem>>> databinding logically binds a user clicking in the listbox to select a new item with an update of the viewmodel. As the same viewmodel attribute is bound to the gmaps component this has the side effect of updating the location shown by the map. 
   
   The details of the listbox and the paging controls are outlined below: 
   
@@ -229,20 +232,20 @@ The ViewModel
 	27           </listitem>
 	28         </template>
 	29       </listbox>
-	30       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	31         activePage="@save(vm.activePage)" />
+	30
+	31       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
+	32         activePage="@save(vm.activePage)" />
 
 +--------------------------
 
-  At line 13 the 'model' attribute of the listbox is bound onto the 'zipcodes' attribute of the viewmodel. This has the effect of binding the listbox to the list of data returned by the viewmodel getZipcodes accessor highlighted below: 
+  The <<<model>>> attribute of the listbox is bound onto the <<<zipcodes>>> attribute of the viewmodel at line 13 of the XML. This binds the listbox contents to the data returned by the viewmodel <<<getZipcodes()>>> accessor. 
+
+  The rendering of the entities is driven by the <<<template>>> element at line 21. This creates a loop variable <<<zipcode>>> over the model list returned from the viewmodel. Each cell of the listitem is then rendered using <<<@load>>> databindings onto the loop variable entity.
+  
+  The viewmodel offloads the pagination logic to the <<<zipcodeRepository>>> using the attributes <<<activePage>>> and <<<pageSize>>>: 
   
 +--------------------------
   
-	15 public class ZipcodeViewModel {
-	16 
-	17   @WireVariable
-	18   protected ZipcodeRepository zipcodeRepository = null;
-	
 	39   public List<Zipcode> getZipcodes()
 	40   {
 	41     Pageable pageable = new PageRequest(activePage,pageSize);
@@ -252,18 +255,17 @@ The ViewModel
 
 +--------------------------
 
-  The viewmodel offloads the pagination logic to the zipcodeRepository using the attributes 'activePage' and 'pageSize'. At line 31 the @save databinding of the 'activePage' paging attribute cause updates to the viewmodel whenever the user selects a new page: 
+  The actual paging behaviour is driven by the <<<@save>>> databinding of the <<<activePage>>> paging attribute: 
   
 +--------------------------
 
 
 	       <paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
-	31         activePage="@save(vm.activePage)" />
+	32         activePage="@save(vm.activePage)" />
 
 +--------------------------
-
   
-  This has the effect of updating the page returned to from the 'zipcodes' viewmodel accessor. The instruction to reload the listbox model when the viewmodel 'activePage' is updated is defined by the @NotifyChange annotation on the setter method: 
+  Updating the <<<vm.activePage>>> attribute has the effect of changing the page of data which will be returned by the <<<getZipcodes()>>> accessor. The behaviour for reloading the listbox when the <<<activePage>>> is updated is created with the <<<@NotifyChange("zipcodes")>>> annotation on the viewmodel <<setActivePage>> method: 
   
 +--------------------------
 
@@ -275,3 +277,8 @@ The ViewModel
 
 +--------------------------
 
+  The <<<@NotifyChange>>> annotation associates a write to one viewmodel attribute with a read from another. This causes the framework binder to rerender the listbox due to an implied change of the <<vm.zipcodes>>> with any write to <<<vm.activePage>>>. 
+  
+Summary
+
+  It is suprising how little code is required to implement efficient serverside pagination using the frameworks demonstrated in this article. The screen is a small Java class of around 40 lines backing a small XML file of around 30 lines. The database logic uses by the screen was generated by a single line of Java. 

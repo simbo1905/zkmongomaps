@@ -27,8 +27,10 @@
 					</listitem>
 				</template>
 			</listbox>
+			
 			<paging pageSize="@load(vm.pageSize)" totalSize="@load(vm.totalSize)"
 				activePage="@save(vm.activePage)" />
+				
 		</vbox>
 	</window>
 	Fork this code at <n:a href="https://github.com/simbo1905/zkmongomaps">github.com</n:a>
