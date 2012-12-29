@@ -56,5 +56,6 @@
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.zul</welcome-file>
+		<welcome-file>index.index</welcome-file>
 	</welcome-file-list>
 </web-app>
