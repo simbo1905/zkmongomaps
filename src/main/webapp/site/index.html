@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maven - ZK Serverside Pagination with Spring Data MongoDB</title>
+    <title>Maven - Serverside Pagination with ZK, Spring Data MongoDB and Google Maps</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -17,6 +17,7 @@
 
     
     <meta http-equiv="Content-Language" content="en" />
+    $headContent
         </head>
         <body class="topBarDisabled">
           
@@ -55,11 +56,12 @@
         <div id="bodyColumn" >
                                   
             <div class="section"><h2>Introduction</h2>
-<p>Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database known as &quot;serverside pagination&quot;. Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse the <a href="media.mongodb.org/zips.json">zips.json</a> zipcode dataset efficiently with very little code. The sample sourcecode is available on Github at <a class="externalLink" href="https://github.com/simbo1905/zkmongomaps">zkmongomaps</a> and the application can be viewed running on <a class="externalLink" href="http://zkmongomaps-simbo1905.rhcloud.com/">openshift</a>.</p>
+<p>Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to delegate the pagination of the data to the database known as &quot;serverside pagination&quot;. Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse a zipcode dataset efficiently with very little code. </p>
+<p>The sample sourcecode is available on Github at <a href="https://github.com/simbo1905/zkmongomaps" class="externalLink">zkmongomaps</a> and the application can be viewed running on the <a href="http://zkmongomaps-simbo1905.rhcloud.com/" class="externalLink">openshift</a> cloud.</p>
 </div>
 <div class="section"><h2>The Screen</h2>
 <p>The screen is a Google Maps component driven by a paginated listbox: </p>
-<img src="./images/screen.png" alt="Sample Screen" /><p>The screen renders simple Zipcode entities which are defined within the file <a class="externalLink" href="https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/Zipcode.java">Zipcode.java</a> outlined below: </p>
+<img src="./images/screen.png" alt="Sample Screen" /><p>The screen renders simple Zipcode entities which are defined within the file <a href="https://github.com/simbo1905/zkmongomaps/blob/master/src/main/java/org/github/simbo1905/zkmongogmaps/app/Zipcode.java" class="externalLink">Zipcode.java</a> outlined below: </p>
 <div class="source"><pre class="prettyprint">
         08 @Document
         09 public class Zipcode {
@@ -96,10 +98,10 @@
 
 </pre>
 </div>
-<p>The entity class is marked with Spring Data persistence annotations <tt>@Document</tt> and <tt>@Id</tt>. This marks the entity for mapping into a MongoDB document database and defines the document primary key. The remainder of the class defines simple properties that Spring Data MongoDb will map into documents using relection. </p>
+<p>The entity class is marked with Spring Data persistence annotations <tt>@Document</tt> and <tt>@Id</tt>. This marks the entity for mapping into the MongoDB document database and defines the document primary key. The remainder of the class defines simple properties that Spring Data MongoDb will map to documents using reflection. </p>
 </div>
 <div class="section"><h2>Data Access</h2>
-<p>The data access layer is provided by a single file which defines the ZipcodeRepository interface. No implimentation of the class is given within the sample sourcecode; the Spring Data MongoDB framework generates an implimentation at runtime. </p>
+<p>The data access layer is provided by a single file which defines the ZipcodeRepository interface. No implementation of the class is given within the sample sourcecode; the Spring Data MongoDB framework generates an implementation at runtime. </p>
 <div class="source"><pre class="prettyprint">
         @Repository
         public interface ZipcodeRepository extends MongoRepository&lt;Zipcode, String&gt; {
@@ -111,17 +113,17 @@
         Page&lt;T&gt; findAll(Pageable pageable);
 </pre>
 </div>
-<p>Better yet the Spring Data MongoDB framework can generate custom query logic based on carefully named method signatures. Within the sample sourcecode are junit tests which exercise basic and geospatial queries not used by the screen. For example adding the following methods signitures to the <tt>ZipcodeRepository</tt> interface will generate a query by <tt>state</tt> and a geospatial distance query on the <tt>loc</tt> attribute: </p>
+<p>Better yet the Spring Data MongoDB framework can generate custom query logic based on carefully named method signatures. Within the sample sourcecode are junit tests which exercise basic and geospatial queries not used by the screen. For example adding the following methods signatures to the <tt>ZipcodeRepository</tt> interface will generate a query by <tt>state</tt> and a geospatial distance query on the <tt>loc</tt> attribute: </p>
 <div class="source"><pre class="prettyprint">
         List&lt;Zipcode&gt; findByState(String state);
 
         List&lt;Zipcode&gt; findByLocNear(Point p, Distance d);
 </pre>
 </div>
-<p>The geospatial capabilities of Spring Data Mongodb are covered in detail by Tobias Trelle's blog <a href="hhttp://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/">Spring Data Part 4: Geospatial Queries with MongoDB</a></p>
+<p>The geospatial capabilities of Spring Data Mongodb are covered in detail by Tobias Trelle's blog <a href="http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/" class="externalLink">Spring Data Part 4: Geospatial Queries with MongoDB</a></p>
 </div>
 <div class="section"><h2>The Screen File</h2>
-<p>The screen is defined within a single ZUL page within the file <a class="externalLink" href="https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul">index.zul</a>. Here is the entire ZUL screen: </p>
+<p>The screen is defined within a single ZUL page within the file <a href="https://github.com/simbo1905/zkmongomaps/blob/master/src/main/webapp/index.zul" class="externalLink">index.zul</a>. Here is the entire ZUL screen: </p>
 <div class="source"><pre class="prettyprint">
            &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
         02 &lt;?variable-resolver class=&quot;org.zkoss.zkplus.spring.DelegatingVariableResolver&quot;?&gt;
@@ -162,7 +164,7 @@
         37 &lt;/zk&gt;
 </pre>
 </div>
-<p>The ZUL file makes use of the framework support for the MVVM pattern using <a class="externalLink" href="http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM">ZK Bind</a>. The framework binder <tt>org.zkoss.bind.BindComposer</tt> is applied to the window component at line 4. This activates databindings within the XML attributes which bind screen properties onto the serverside java code. The viewmodel of the page is set as an instance of the <tt>ZipCodeViewModel</tt> class and assigned the variable name <tt>vm</tt> at line 5. The details of the viewmodel and the databinding that drive the screen behaviours are detailed in the following sections. </p>
+<p>The ZUL file makes use of the framework support for the MVVM pattern using <a href="http://books.zkoss.org/wiki/ZK_Developer%27s_Reference/MVVM" class="externalLink">ZK Bind</a>. The framework binder <tt>org.zkoss.bind.BindComposer</tt> is applied to the window component at line 4. This activates databindings within the XML attributes which bind screen properties onto the serverside java code. The viewmodel of the page is set as an instance of the <tt>ZipCodeViewModel</tt> class and assigned the variable name <tt>vm</tt> at line 5. The details of the viewmodel and the databinding that drive the screen behaviours are detailed in the following sections. </p>
 </div>
 <div class="section"><h2>The ViewModel</h2>
 <p>Here is the entire viewmodel class: </p>
@@ -211,7 +213,7 @@
 56 }
 </pre>
 </div>
-<p>The viewmodel is the Presentation Model of the screen in the style of the MVVM design pattern. A detailed discussion of the design pattern is covered in the paper <a class="externalLink" href="http://www.ibm.com/developerworks/websphere/zones/portal/proddoc/zkjavaajax/">Implementing event-driven GUI patterns using the ZK Java AJAX framework</a>. Within the sample sourcecode the viewmodel mediates the screens interaction with the the <tt>zipcodeRepository</tt> and holds the domain state of the screen. The <tt>zipcodeRepository</tt> is injected by ZK in response to the <tt>@WireVariable</tt> annotation. The ZUL file configures the ZK Spring <tt>DelegatingVariableResolver</tt> as the variable resolver. This causes ZK to request the corresponding spring bean which is an instance of the generated data access class. </p>
+<p>The viewmodel is the Presentation Model of the screen in the style of the MVVM design pattern. A detailed discussion of the design pattern is covered in the paper <a href="http://www.ibm.com/developerworks/websphere/zones/portal/proddoc/zkjavaajax/" class="externalLink">Implementing event-driven GUI patterns using the ZK Java AJAX framework</a>. Within the sample sourcecode the viewmodel mediates the screens interaction with the <tt>zipcodeRepository</tt> and holds the domain state of the screen. The <tt>zipcodeRepository</tt> is injected by ZK in response to the <tt>@WireVariable</tt> annotation. The ZUL file configures the ZK Spring <tt>DelegatingVariableResolver</tt> as the variable resolver. This causes ZK to request the corresponding spring bean which is an instance of the generated data access class. </p>
 <p>The XML contains <tt>@load</tt> databindings for the <tt>lat</tt> and <tt>lng</tt> properties of the gmaps component as highlighted below: </p>
 <div class="source"><pre class="prettyprint">
         &lt;gmaps 
@@ -271,7 +273,7 @@
         32         activePage=&quot;@save(vm.activePage)&quot; /&gt;
 </pre>
 </div>
-<p>Updating the <tt>vm.activePage</tt> attribute has the effect of changing the page of data which will be returned by the <tt>getZipcodes()</tt> accessor. The behaviour for reloading the listbox when the <tt>activePage</tt> is updated is created with the <tt>@NotifyChange(&quot;zipcodes&quot;)</tt> annotation on the viewmodel <b>setActivePage</b> method: </p>
+<p>Updating the <tt>vm.activePage</tt> attribute has the effect of changing the page of data which will be returned by the <tt>getZipcodes()</tt> accessor. The behaviour for reloading the listbox when the <tt>activePage</tt> is updated is created with the <tt>@NotifyChange(&quot;zipcodes&quot;)</tt> annotation on the viewmodel <tt>setActivePage</tt> method: </p>
 <div class="source"><pre class="prettyprint">
 33   @NotifyChange(&quot;zipcodes&quot;)
 34   public void setActivePage(int activePage)
@@ -280,10 +282,10 @@
 37   }
 </pre>
 </div>
-<p>The <tt>@NotifyChange</tt> annotation associates a write to one viewmodel attribute with a read from another. This causes the framework binder to rerender the listbox due to an implied change of the <b>vm.zipcodes</b>&gt; with any write to <tt>vm.activePage</tt>. </p>
+<p>The <tt>@NotifyChange</tt> annotation associates a write to one viewmodel attribute with a read from another. This causes the framework binder to re-render the listbox due to an implied change of the <b>vm.zipcodes</b>&gt; with any write to <tt>vm.activePage</tt>. </p>
 </div>
 <div class="section"><h2>Summary</h2>
-<p>It is suprising how little code is required to implement efficient serverside pagination using the frameworks demonstrated in this article. The screen is a small Java class of around 40 lines backing a small XML file of around 30 lines. The database logic uses by the screen was generated by a single line of Java. </p>
+<p>This article has taken a rapid run through of implementing efficient serverside pagination with ZK, Spring and MongoDB. The screen is a small Java class of around 40 lines backing a small XML file of around 30 lines. The database logic used by the screen was generated by a single line of Java. The logic to link screen controls to render the paginated data and the selected item was configured rather than coded. It is surprising just how little code is required to implement efficient serverside pagination with the ZK MVVM and Spring Data frameworks. </p>
 </div>
 
                   </div>
