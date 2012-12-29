@@ -1,10 +1,12 @@
 	------
-	ZK Serverside Pagination with Spring Data MongoDB 
+	Serverside Pagination with ZK, Spring Data MongoDB and Google Maps 
 	------
 
 Introduction
 
-  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to offload the pagination of the data to the database known as "serverside pagination". Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse the {{{media.mongodb.org/zips.json}zips.json}} zipcode dataset efficiently with very little code. The sample sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}}.
+  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to delegate the pagination of the data to the database known as "serverside pagination". Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse a zipcode dataset efficiently with very little code. 
+  
+  The sample sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on the {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}} cloud.
 
 The Screen
 
@@ -52,11 +54,11 @@ The Screen
 
 +--------------------------
 
-  The entity class is marked with Spring Data persistence annotations <<<@Document>>> and <<<@Id>>>. This marks the entity for mapping into a MongoDB document database and defines the document primary key. The remainder of the class defines simple properties that Spring Data MongoDb will map into documents using relection. 
+  The entity class is marked with Spring Data persistence annotations <<<@Document>>> and <<<@Id>>>. This marks the entity for mapping into the MongoDB document database and defines the document primary key. The remainder of the class defines simple properties that Spring Data MongoDb will map to documents using reflection. 
 
 Data Access
 
-  The data access layer is provided by a single file which defines the ZipcodeRepository interface. No implimentation of the class is given within the sample sourcecode; the Spring Data MongoDB framework generates an implimentation at runtime. 
+  The data access layer is provided by a single file which defines the ZipcodeRepository interface. No implementation of the class is given within the sample sourcecode; the Spring Data MongoDB framework generates an implementation at runtime. 
   
 +--------------------------
 
@@ -74,7 +76,7 @@ Data Access
 
 +--------------------------  
 
-  Better yet the Spring Data MongoDB framework can generate custom query logic based on carefully named method signatures. Within the sample sourcecode are junit tests which exercise basic and geospatial queries not used by the screen. For example adding the following methods signitures to the <<<ZipcodeRepository>>> interface will generate a query by <<<state>>> and a geospatial distance query on the <<<loc>>> attribute: 
+  Better yet the Spring Data MongoDB framework can generate custom query logic based on carefully named method signatures. Within the sample sourcecode are junit tests which exercise basic and geospatial queries not used by the screen. For example adding the following methods signatures to the <<<ZipcodeRepository>>> interface will generate a query by <<<state>>> and a geospatial distance query on the <<<loc>>> attribute: 
   
 +--------------------------
 
@@ -84,7 +86,7 @@ Data Access
 
 +--------------------------
 
-  The geospatial capabilities of Spring Data Mongodb are covered in detail by Tobias Trelle's blog {{{hhttp://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/}Spring Data Part 4: Geospatial Queries with MongoDB}}
+  The geospatial capabilities of Spring Data Mongodb are covered in detail by Tobias Trelle's blog {{{http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/}Spring Data Part 4: Geospatial Queries with MongoDB}}
 
 The Screen File
 
@@ -265,7 +267,7 @@ The ViewModel
 
 +--------------------------
   
-  Updating the <<<vm.activePage>>> attribute has the effect of changing the page of data which will be returned by the <<<getZipcodes()>>> accessor. The behaviour for reloading the listbox when the <<<activePage>>> is updated is created with the <<<@NotifyChange("zipcodes")>>> annotation on the viewmodel <<setActivePage>> method: 
+  Updating the <<<vm.activePage>>> attribute has the effect of changing the page of data which will be returned by the <<<getZipcodes()>>> accessor. The behaviour for reloading the listbox when the <<<activePage>>> is updated is created with the <<<@NotifyChange("zipcodes")>>> annotation on the viewmodel <<<setActivePage>>> method: 
   
 +--------------------------
 
@@ -281,4 +283,6 @@ The ViewModel
   
 Summary
 
-  It is suprising how little code is required to implement efficient serverside pagination using the frameworks demonstrated in this article. The screen is a small Java class of around 40 lines backing a small XML file of around 30 lines. The database logic uses by the screen was generated by a single line of Java. 
+  This article has taken a rapid run through of implementing efficient serverside pagination with ZK, Spring and MongoDB. The screen is a small Java class of around 40 lines backing a small XML file of around 30 lines. The database logic uses by the screen was generated by a single line of Java. The logic to link screen controls to render the paginated data and the selected item was configured rather than coded. It is suprising just how little code is required to implement efficient serverside pagination with the ZK MVVM and Spring Data frameworks. 
+  
+ 

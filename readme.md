@@ -3,13 +3,13 @@
 
 ## Build
 
-Build and run the code with 
+Build and run the code with: 
 
 	mvn -Dmaven.test.skip=true package jetty:run
 
 It will run inside of its own jetty server. 
 
-You can set the following properties which defaults to the values shown: 
+You can set the following properties with defaults as shown: 
 
 	-Djetty.port=8080 
 	-Dzkmongomaps.mongo.host=localhost
@@ -18,18 +18,19 @@ You can set the following properties which defaults to the values shown:
 	-Dzkmongomaps.mongo.user=zkmongomaps
 	-Dzkmongomaps.mongo.password=xxx
 
-The defaults are defined within zkmongogmaps.properties
+The defaults are configured within zkmongogmaps.properties
 
 Upon first startup the application will attempt to load its own test data from 
 the file zips.json.gz which was sourced from http://media.mongodb.org/zips.json
-This may take more than a minute. 
+The one time dataload may take more than a minute. 
 
-Note that the code assumes you are running mongodb with --auth with a username 
-and password added to the particular db. This matches how mongo runs on 
-Redhat Openshift. You can edit the CityConfig.java to take out the credentials 
-code see the comment in that class. 
+Note that the code assumes you are running mongod with --auth and a username 
+and password added to the application db: 
 
 [Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
+
+This matches how mongo runs on a cloud provider such as Redhat Openshift. You 
+can edit the CityConfig.java to take out the credential setting line if required. 
 
 ## Running On Redhat Openshift PaaS
 
@@ -54,10 +55,10 @@ Approximate openshift instructions
 	git remote show upstream
 	git remote show origin
 	
-	# insure the code build and deploys see commmandline.build.and.run.txt for full details
+	# insure the code builds
 	mvn -Dmaven.test.skip=true package
 	
-	#once you have it working push it up to 'origin' which should be your server which will build it and start the app
+	# push it up to 'origin' which should be your server which will build it and start the app
 	git push
 	
 	#tail the logs in a second window
@@ -65,7 +66,7 @@ Approximate openshift instructions
 
 ## Inspiration 
 
-Tobias Trelle with [Spring Data Ð Part 4: Geospatial Queries with MongoDB](http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/)
+Tobias Trelle with [Spring Data Part 4: Geospatial Queries with MongoDB](http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/)
 
 Hamid Fadishei with [ZK MVVM Design Pattern and Server-Side Paging](http://fadishei.wordpress.com/2012/03/22/zk-mvvm-design-pattern-and-server-side-paging/)
 
