@@ -34,7 +34,7 @@ and password added to the application db:
 [Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
 
 This matches how mongo runs on a cloud provider such as Redhat Openshift. You 
-can edit the CityConfig.java to take out the credential setting line if required. 
+can edit the ZipcodeAppConfig.java to take out the credentials setting line if required. 
 
 ## Running On Redhat Openshift PaaS
 
@@ -51,13 +51,13 @@ Approximate openshift instructions
 	#add the demo code repo to the folder
 	cd zkmongomaps
 	git remote add upstream https://github.com/simbo1905/zkmongomaps.git
-	
-	# in the next command just hit return if asked for a password for downloading the code
-	git pull -s recursive -X theirs upstream master
-	
+
 	# you can check that 'upstream' points to my demo code and 'origin' points to your server with 
 	git remote show upstream
 	git remote show origin
+	
+	# pull down the demo code (just hit return if asked for a password)
+	git pull -s recursive -X theirs upstream master
 	
 	# insure the code builds
 	mvn -Dmaven.test.skip=true package
