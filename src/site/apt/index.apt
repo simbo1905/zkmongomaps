@@ -4,7 +4,9 @@
 
 Introduction
 
-  Handling large data sets efficiently can be critical in creating a responsive application. An standard strategy is to delegate the pagination of the data to the database known as "serverside pagination". Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse a zipcode dataset efficiently with very little code. 
+  This article has been published at {{{http://architects.dzone.com/articles/serverside-pagination-zk}http://architects.dzone.com/articles/serverside-pagination-zk}}
+
+  Handling large data sets efficiently can be critical in creating a responsive application. A standard strategy is to delegate the pagination of the data to the database known as "serverside pagination". Traditionally this would require writing a significant amount of boilerplate code. This article will combine ZK MVVM, Spring Data MongoDB and Google Maps to browse a zipcode dataset efficiently with very little code. 
   
   The sample sourcecode is available on Github at {{{https://github.com/simbo1905/zkmongomaps}zkmongomaps}} and the application can be viewed running on the {{{http://zkmongomaps-simbo1905.rhcloud.com/}openshift}} cloud.
 
