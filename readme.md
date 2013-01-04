@@ -67,8 +67,8 @@ Openshift Instructions:
 	git push
 	
 	# tail the logs in a second window
-	rhc-tail-files -a zkmongomaps 
-
+	rhc-tail-files -a zkmongomaps
+	
 ## Inspiration 
 
 Tobias Trelle with [Spring Data Part 4: Geospatial Queries with MongoDB](http://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/)
