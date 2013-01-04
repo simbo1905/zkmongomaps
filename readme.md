@@ -41,7 +41,7 @@ setting line to run your local mongo with the default settings.
 
 See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
 
-Approximate openshift instructions:
+Openshift Instructions:
 
 	# create a diy app
 	rhc app create zkmongomaps diy-0.1
@@ -49,21 +49,21 @@ Approximate openshift instructions:
 	# add mongo cartridge
 	rhc cartridge add mongodb-2.2 --app zkmongomaps
 	
-	# add the demo code repo to the folder
+	# add the demo repo to the local folder created by the 'rhc app' command
 	cd zkmongomaps
 	git remote add upstream https://github.com/simbo1905/zkmongomaps.git
 
-	# you can check that 'upstream' points to my demo code and 'origin' points to your server with 
+	# you can check that 'upstream' now points to my demo code and 'origin' points to your cloud server with 
 	git remote show upstream
 	git remote show origin
 	
 	# pull down the demo code (just hit return if asked for a password)
 	git pull -s recursive -X theirs upstream master
 	
-	# insure the code builds
+	# insure the demo code builds in your servers local folder
 	mvn -Dmaven.test.skip=true package
 	
-	# push it up to 'origin' which should be your server which will build it and start the app
+	# push it up to 'origin' which should be your server and it will build and start the app
 	git push
 	
 	# tail the logs in a second window
