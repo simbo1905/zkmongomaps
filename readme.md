@@ -30,7 +30,7 @@ The one time dataload may take more than a minute.
 
 Note that the code assumes you are running mongod with --auth with a username 
 and password set on the db that the app is using.  This matches how mongo runs 
-on a cloud provider such as Redhat Openshift. See the following mongo dos: 
+on a cloud provider such as Redhat Openshift. See the following mongo docs: 
 
 [Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
 
