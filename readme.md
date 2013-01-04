@@ -29,12 +29,13 @@ the file zips.json.gz which was sourced from http://media.mongodb.org/zips.json
 The one time dataload may take more than a minute. 
 
 Note that the code assumes you are running mongod with --auth with a username 
-and password set on the db that the app is using: 
+and password set on the db that the app is using.  This matches how mongo runs 
+on a cloud provider such as Redhat Openshift. See the following mongo dos: 
 
 [Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
 
-This matches how mongo runs on a cloud provider such as Redhat Openshift. You 
-can edit the ZipcodeAppConfig.java to take out the credentials setting line if required. 
+Alternatively you can edit the ZipcodeAppConfig.java to take out the credentials 
+setting line to run your local mongo with the default settings. 
 
 ## Running On Redhat Openshift PaaS
 
