@@ -28,8 +28,8 @@ Upon first startup the application will attempt to load its own test data from
 the file zips.json.gz which was sourced from http://media.mongodb.org/zips.json
 The one time dataload may take more than a minute. 
 
-Note that the code assumes you are running mongod with --auth and a username 
-and password added to the application db: 
+Note that the code assumes you are running mongod with --auth with a username 
+and password set on the db that the app is using: 
 
 [Mongo DB - Adding Users](http://docs.mongodb.org/manual/tutorial/control-access-to-mongodb-with-authentication/#adding-users)
 
