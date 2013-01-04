@@ -41,7 +41,7 @@ setting line to run your local mongo with the default settings.
 
 See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
 
-Approximate openshift instructions
+Approximate openshift instructions:
 
 	# create a diy app
 	rhc app create zkmongomaps diy-0.1
@@ -49,7 +49,7 @@ Approximate openshift instructions
 	# add mongo cartridge
 	rhc cartridge add mongodb-2.2 --app zkmongomaps
 	
-	#add the demo code repo to the folder
+	# add the demo code repo to the folder
 	cd zkmongomaps
 	git remote add upstream https://github.com/simbo1905/zkmongomaps.git
 
@@ -66,7 +66,7 @@ Approximate openshift instructions
 	# push it up to 'origin' which should be your server which will build it and start the app
 	git push
 	
-	#tail the logs in a second window
+	# tail the logs in a second window
 	rhc-tail-files -a zkmongomaps 
 
 ## Inspiration 
@@ -75,6 +75,6 @@ Tobias Trelle with [Spring Data Part 4: Geospatial Queries with MongoDB](http://
 
 Hamid Fadishei with [ZK MVVM Design Pattern and Server-Side Paging](http://fadishei.wordpress.com/2012/03/22/zk-mvvm-design-pattern-and-server-side-paging/)
 
-See Z60-Gmaps-Bind.zul in the sourcecode for MVVM ZK GMaps showcasing the test module of [zkgmapsz](https://code.google.com/p/zkgmapsz/)
+See Z60-Gmaps-Bind.zul in the sourcecode for ZK GMaps MVVM API showcasing the test module of [zkgmapsz](https://code.google.com/p/zkgmapsz/)
 
 End.
