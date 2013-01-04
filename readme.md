@@ -37,7 +37,7 @@ on a cloud provider such as Redhat Openshift. See the following mongo docs:
 Alternatively you can edit the ZipcodeAppConfig.java to take out the credentials 
 setting line to run your local mongo with the default settings. 
 
-## Running On Redhat Openshift PaaS
+## Running On Redhat Openshift PaaS Cloud
 
 See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
 
