@@ -1,10 +1,6 @@
 
 #### ZK MVVM Spring Data Mongodb & Google Maps Demo
 
-## Write Up
-
-This demo app is written up in the article [Serverside Pagination with ZK, Spring Data MongoDB and Google Maps](http://architects.dzone.com/articles/serverside-pagination-zk)
-
 ## Build
 
 Build and run the code with: 
