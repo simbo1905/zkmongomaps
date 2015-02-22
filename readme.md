@@ -35,8 +35,6 @@ setting line to run your local mongo with the default settings.
 
 ## Running On Redhat Openshift PaaS Cloud
 
-See it running on redhat openshift cloud at http://zkmongomaps-simbo1905.rhcloud.com/
-
 Openshift Instructions:
 
 	# create a diy app
